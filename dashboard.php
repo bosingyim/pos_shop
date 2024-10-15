@@ -57,58 +57,93 @@ $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto p-4">
-        <h1 class="text-3xl font-bold mb-4">Admin Dashboard</h1>
+    <h1 class="text-4xl font-bold mb-4 text-purple-600 hover:text-purple-800 transition duration-300 ease-in-out transform hover:scale-105 shadow-lg p-2 border-2 border-purple-500 rounded-md">
+    Admin Dashboard
+</h1>
+
+
 
         <!-- แสดงวันปัจจุบัน -->
-        <p class="text-lg text-gray-700 mb-2">Today's Date: <?php echo date("d F Y"); ?></p>
+        <p class="text-lg text-gray-700 mb-2">วันที่: <?php echo date("d F Y"); ?></p>
 
         <!-- ปุ่มกลับไปหน้าหลัก -->
-        <a href="index.php" class="inline-block mb-4 bg-gray-700 text-white p-2 rounded">กลับไปหน้าหลัก</a>
+        <a href="index.php" 
+   class="inline-block mb-4 bg-gray-700 text-white p-2 rounded transition-transform duration-300 hover:scale-105">
+   กลับไปหน้าหลัก
+</a>
+
 
         <!-- การ์ดแสดงยอดขาย รายวัน กำไร และสินค้าคงเหลือ -->
-        <div class="grid grid-cols-2 gap-4 mb-6">
-            <div class="bg-green-500 text-white p-4 rounded shadow">
-                <h2 class="text-xl font-bold">Total Sales</h2>
-                <p class="text-2xl">฿<?php echo number_format($sales, 2); ?></p>
-            </div>
-            <div class="bg-blue-500 text-white p-4 rounded shadow">
-                <h2 class="text-xl font-bold">Daily Sales</h2>
-                <p class="text-2xl">฿<?php echo number_format($daily_sales, 2); ?></p>
-            </div>
-            <div class="bg-yellow-500 text-white p-4 rounded shadow">
-                <h2 class="text-xl font-bold">Total Profit</h2>
-                <p class="text-2xl">฿<?php echo number_format($profit, 2); ?></p>
-            </div>
-            <div class="bg-blue-500 text-white p-4 rounded shadow">
-                <h2 class="text-xl font-bold">Total Quantity</h2>
-                <p class="text-2xl"><?php echo htmlspecialchars($total_quantity); ?> items</p>
-            </div>
-        </div>
+       <!-- Add floating animation to the grid items -->
+<div class="grid grid-cols-2 gap-4 mb-6">
+    <div class="bg-green-500 text-white p-4 rounded shadow animate-float">
+        <h2 class="text-xl font-bold">ยอดขายวันนี้</h2>
+        <p class="text-2xl">฿<?php echo number_format($sales, 2); ?></p>
+    </div>
+
+    <div class="bg-blue-500 text-white p-4 rounded shadow animate-float-delay">
+        <h2 class="text-xl font-bold">จำนวนสินค้าทั้งหมด</h2>
+        <p class="text-2xl"><?php echo htmlspecialchars($total_quantity); ?> ตัว</p>
+    </div>
+</div>
+
+<!-- Add Tailwind CSS styles in <head> -->
+<style>
+@keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+}
+@keyframes float-delay {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-8px); }
+}
+
+.animate-float {
+    animation: float 4s ease-in-out infinite;
+}
+
+.animate-float-delay {
+    animation: float-delay 3.5s ease-in-out infinite;
+}
+</style>
+
 
         
 
-        <h2 class="text-2xl font-bold mt-6 mb-4">Add New Product</h2>
-        <button onclick="toggleForm()" class="bg-blue-500 text-white p-2 rounded mb-4">Add Product</button>
+        <h2 class="text-2xl font-bold mt-6 mb-4">เพิ่มสินค้าใหม่</h2>
+<button 
+    onclick="toggleForm()" 
+    class="bg-blue-500 text-white p-2 rounded mb-4 flex items-center gap-2 hover:bg-blue-600 transition-transform transform hover:scale-105"
+>
+    <svg class="w-5 h-5 fill-current" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
+        <path d="M12 5v7m0 0v7m0-7h7m-7 0H5" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+    </svg>
+    <span>เพิ่มสินค้า</span>
+</button>
 
-        <!-- ฟอร์มเพิ่มสินค้า -->
-        <form id="addProductForm" action="add_product.php" method="POST" enctype="multipart/form-data" class="bg-white p-4 rounded shadow hidden">
-            <input type="text" name="name" placeholder="Product Name" required class="border p-2 mb-4 w-full">
-            <textarea name="description" placeholder="Product Description" required class="border p-2 mb-4 w-full"></textarea>
-            <input type="number" name="price" placeholder="Price" required class="border p-2 mb-4 w-full">
-            <input type="number" name="quantity" placeholder="Quantity" required class="border p-2 mb-4 w-full">
-            <input type="file" name="image" required class="border p-2 mb-4 w-full">
-            <button type="submit" name="submit" class="bg-blue-500 text-white p-2 rounded">Add Product</button>
-        </form>
+<!-- ฟอร์มเพิ่มสินค้า -->
+<form id="addProductForm" action="add_product.php" method="POST" enctype="multipart/form-data" 
+      class="bg-white p-4 rounded shadow hidden transition-all duration-500 transform scale-90">
+    <input type="text" name="name" placeholder="Product Name" required class="border p-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <textarea name="description" placeholder="Product Description" required class="border p-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"></textarea>
+    <input type="number" name="price" placeholder="Price" required class="border p-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <input type="number" name="quantity" placeholder="Quantity" required class="border p-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <input type="file" name="image" required class="border p-2 mb-4 w-full focus:outline-none focus:ring-2 focus:ring-blue-500">
+    <button type="submit" name="submit" 
+        class="bg-green-500 text-white p-2 rounded hover:bg-green-600 transition-colors">
+        เพิ่มสินค้า
+    </button>
+</form>
 
-        <h2 class="text-2xl font-bold mt-6 mb-4">Available Products</h2>
+        <h2 class="text-2xl font-bold mt-6 mb-4">สินค้าที่มี</h2>
         <table class="min-w-full bg-white shadow-md rounded mb-4">
             <thead>
                 <tr class="bg-gray-800 text-white">
-                    <th class="py-2 px-4">Name</th>
-                    <th class="py-2 px-4">Description</th>
-                    <th class="py-2 px-4">Price</th>
-                    <th class="py-2 px-4">Quantity</th>
-                    <th class="py-2 px-4">Image</th>
+                    <th class="py-2 px-4">ชื่อ</th>
+                    <th class="py-2 px-4">คำอธิบาย</th>
+                    <th class="py-2 px-4">ราคา</th>
+                    <th class="py-2 px-4">จำนวน</th>
+                    <th class="py-2 px-4">รูปภาพ</th>
                     <th class="py-2 px-4">Action</th>
                 </tr>
             </thead>

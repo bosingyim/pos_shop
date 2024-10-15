@@ -125,7 +125,7 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>POS System</title>
+    <title>samgirllov3sryleShop</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
     <style>
         .modal {
@@ -152,32 +152,72 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
 </head>
 <body class="bg-gray-100">
     <div class="container mx-auto p-4">
-        <div class="flex justify-between items-center mb-4">
-            <h1 class="text-3xl font-bold">Welcome to the POS System</h1>
-            <form action="logout.php" method="POST">
-                <button type="submit" class="bg-red-500 text-white p-2 rounded">Logout</button>
-            </form>
-        </div>
+    <div class="flex justify-between items-center mb-4">
+    <h1 class="text-4xl font-bold bg-gradient-to-r from-purple-500 via-pink-500 to-red-500 text-transparent bg-clip-text animate-pulse">
+        Welcome to samgirl POS
+    </h1>
+    <form action="logout.php" method="POST">
+    <button type="submit" 
+    class="bg-red-500 text-white p-2 rounded transition duration-300 ease-in-out 
+           hover:bg-red-600 hover:scale-105 hover:shadow-lg 
+           active:scale-95 active:bg-red-700 active:shadow-inner">
+    ออกจากระบบ
+</button>
 
-        <p class="mb-4">Manage your products and sales efficiently.</p>
+<style>
+/* เอฟเฟกต์สั่นเบาๆ เมื่อชี้เมาส์ */
+button:hover {
+    animation: shake 0.3s ease-in-out;
+}
 
-        <a href="dashboard.php" class="bg-blue-500 text-white p-2 rounded">Go to Dashboard</a>
+/* การสั่นเบา */
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    25% { transform: translateX(2px); }
+    50% { transform: translateX(-2px); }
+    75% { transform: translateX(1px); }
+}
+</style>
+
+    </form>
+</div>
+
+
+        <p class="mb-4">ร้านเราขายเป็นราว</p>
+
+        <a href="dashboard.php" 
+   class="bg-blue-500 text-white p-2 rounded shadow-lg transform transition-all duration-500 ease-in-out 
+          hover:bg-blue-600 hover:scale-110 hover:shadow-2xl animate-pulse-custom">
+    ไปที่แดชบอร์ด
+</a>
+
+<style>
+@keyframes pulse-custom {
+    0%, 100% { transform: scale(1); box-shadow: 0 0 8px rgba(59, 130, 246, 0.6); }
+    50% { transform: scale(1.05); box-shadow: 0 0 15px rgba(59, 130, 246, 0.9); }
+}
+
+.animate-pulse-custom {
+    animation: pulse-custom 2s infinite;
+}
+</style>
+
         <div class="flex justify-end">
-            <button id="view-cart-btn" class="bg-green-500 text-white p-2 rounded ml-auto">View Cart (<?php echo isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; ?>)</button>
+            <button id="view-cart-btn" class="bg-green-500 text-white p-2 rounded ml-auto">ดูตะกร้าสินค้า (<?php echo isset($_SESSION['cart']) ? count($_SESSION['cart']) : 0; ?>)</button>
         </div>
 
-        <h2 class="text-2xl font-bold mt-6 mb-4">Available Products</h2>
+        <h2 class="text-2xl font-bold mt-6 mb-4">สินค้าที่มี</h2>
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             <?php foreach ($products as $product): ?>
                 <div class="bg-white rounded-lg shadow p-4">
-                    <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="h-40 w-full object-cover mb-2 rounded">
+                    <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="h-40 w-40 object-cover mb-2 rounded">
                     <h3 class="text-lg font-semibold"><?php echo htmlspecialchars($product['name']); ?></h3>
-                    <p class="text-gray-600">Price: ฿<?php echo htmlspecialchars($product['price']); ?></p>
-                    <p class="text-gray-500">Stock: <?php echo htmlspecialchars($product['quantity']); ?> items</p> <!-- แสดงสินค้าคงเหลือ -->
+                    <p class="text-gray-600">ราคา: ฿<?php echo htmlspecialchars($product['price']); ?></p>
+                    <p class="text-gray-500">สินค้าที่มี: <?php echo htmlspecialchars($product['quantity']); ?> ตัว</p> <!-- แสดงสินค้าคงเหลือ -->
                     <form action="" method="POST">
                         <input type="hidden" name="product_id" value="<?php echo htmlspecialchars($product['id']); ?>">
                         <input type="number" name="quantity" min="1" value="1" class="border rounded p-1 mb-2 w-full">
-                        <button type="submit" name="add_to_cart" class="bg-blue-500 text-white p-2 rounded">Add to Cart</button>
+                        <button type="submit" name="add_to_cart" class="bg-blue-500 text-white p-2 rounded">เพิ่มลงในตะกร้า</button>
                     </form>
                 </div>
             <?php endforeach; ?>
@@ -187,20 +227,20 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
         <div id="cart-modal" class="modal">
             <div class="modal-content">
                 <span class="close">&times;</span>
-                <h2 class="text-xl font-bold">Your Cart</h2>
+                <h2 class="text-xl font-bold">ตะกร้า</h2>
                 <table class="min-w-full">
                     <thead>
                         <tr>
-                            <th class="py-2">Product Name</th>
-                            <th class="py-2">Quantity</th>
-                            <th class="py-2">Price</th>
+                            <th class="py-2">ชื่อสินค้า</th>
+                            <th class="py-2">จำนวน</th>
+                            <th class="py-2">ราคา</th>
                             <th class="py-2">Action</th>
                         </tr>
                     </thead>
                     <tbody>
                         <?php if (empty($productsInCart)): ?>
                             <tr>
-                                <td colspan="4" class="text-center py-2">Your cart is empty.</td>
+                                <td colspan="4" class="text-center py-2">ตะกร้าคุณว่างเปล่า.</td>
                             </tr>
                         <?php else: ?>
                             <?php foreach ($productsInCart as $productInCart): ?>
@@ -226,10 +266,10 @@ if (isset($_SESSION['cart']) && !empty($_SESSION['cart'])) {
                     </tbody>
                 </table>
                 <div class="mt-4">
-                    <strong>Total Price: ฿<?php echo $totalPrice; ?></strong>
+                    <strong>ราคาทั้งหมด: ฿<?php echo $totalPrice; ?></strong>
                 </div>
                 <div class="mt-4">
-                    <a href="checkout.php" class="bg-green-500 text-white p-2 rounded">Proceed to Checkout</a>
+                    <a href="checkout.php" class="bg-green-500 text-white p-2 rounded">ชำระเงิน</a>
                 </div>
             </div>
         </div>
