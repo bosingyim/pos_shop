@@ -8,18 +8,38 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// สถิติยอดขาย
-$stmt = $conn->prepare("SELECT SUM(price) AS total_sales FROM products");
+// ดึงวันปัจจุบัน
+$current_date = date("Y-m-d");
+
+// สถิติยอดขายทั้งหมด (Total Sales)
+$stmt = $conn->prepare("SELECT SUM(total_amount) AS total_sales FROM sales");
 $stmt->execute();
 $sales = $stmt->fetch(PDO::FETCH_ASSOC)['total_sales'] ?? 0;
 
-// ดึงข้อมูลสินค้าที่มีขาย
+// ยอดขายต่อวัน (Daily Sales)
+$stmt = $conn->prepare("SELECT SUM(total_amount) AS daily_sales FROM sales WHERE DATE(sale_date) = ?");
+$stmt->execute([$current_date]);
+$daily_sales = $stmt->fetch(PDO::FETCH_ASSOC)['daily_sales'] ?? 0;
+
+// คำนวณยอดกำไรทั้งหมด (Total Profit)
+$stmt = $conn->prepare("SELECT SUM((price - cost) * quantity_sold) AS total_profit FROM products");
+$stmt->execute();
+$profit = $stmt->fetch(PDO::FETCH_ASSOC)['total_profit'] ?? 0;
+
+// คำนวณยอดรวมของสินค้า (Total Quantity)
+$stmt = $conn->prepare("SELECT SUM(quantity) AS total_quantity FROM products");
+$stmt->execute();
+$total_quantity = $stmt->fetch(PDO::FETCH_ASSOC)['total_quantity'] ?? 0;
+
+// สินค้ายอดฮิต (Best-Selling Product)
+$stmt = $conn->prepare("SELECT name, MAX(quantity_sold) AS max_sold FROM products");
+$stmt->execute();
+$best_selling_product = $stmt->fetch(PDO::FETCH_ASSOC);
+
+// ดึงข้อมูลสินค้าทั้งหมด
 $stmt = $conn->prepare("SELECT * FROM products");
 $stmt->execute();
 $products = $stmt->fetchAll(PDO::FETCH_ASSOC);
-
-// คำนวณสินค้าคงเหลือ
-$total_quantity = array_sum(array_column($products, 'quantity'));
 ?>
 
 <!DOCTYPE html>
@@ -38,21 +58,34 @@ $total_quantity = array_sum(array_column($products, 'quantity'));
 <body class="bg-gray-100">
     <div class="container mx-auto p-4">
         <h1 class="text-3xl font-bold mb-4">Admin Dashboard</h1>
-        
+
+        <!-- แสดงวันปัจจุบัน -->
+        <p class="text-lg text-gray-700 mb-2">Today's Date: <?php echo date("d F Y"); ?></p>
+
         <!-- ปุ่มกลับไปหน้าหลัก -->
         <a href="index.php" class="inline-block mb-4 bg-gray-700 text-white p-2 rounded">กลับไปหน้าหลัก</a>
 
-        <!-- การ์ดแสดงยอดขายและสินค้าคงเหลือ -->
+        <!-- การ์ดแสดงยอดขาย รายวัน กำไร และสินค้าคงเหลือ -->
         <div class="grid grid-cols-2 gap-4 mb-6">
             <div class="bg-green-500 text-white p-4 rounded shadow">
                 <h2 class="text-xl font-bold">Total Sales</h2>
                 <p class="text-2xl">฿<?php echo number_format($sales, 2); ?></p>
             </div>
             <div class="bg-blue-500 text-white p-4 rounded shadow">
+                <h2 class="text-xl font-bold">Daily Sales</h2>
+                <p class="text-2xl">฿<?php echo number_format($daily_sales, 2); ?></p>
+            </div>
+            <div class="bg-yellow-500 text-white p-4 rounded shadow">
+                <h2 class="text-xl font-bold">Total Profit</h2>
+                <p class="text-2xl">฿<?php echo number_format($profit, 2); ?></p>
+            </div>
+            <div class="bg-blue-500 text-white p-4 rounded shadow">
                 <h2 class="text-xl font-bold">Total Quantity</h2>
                 <p class="text-2xl"><?php echo htmlspecialchars($total_quantity); ?> items</p>
             </div>
         </div>
+
+        
 
         <h2 class="text-2xl font-bold mt-6 mb-4">Add New Product</h2>
         <button onclick="toggleForm()" class="bg-blue-500 text-white p-2 rounded mb-4">Add Product</button>
@@ -86,7 +119,9 @@ $total_quantity = array_sum(array_column($products, 'quantity'));
                     <td class="py-2 px-4"><?php echo htmlspecialchars($product['description']); ?></td>
                     <td class="py-2 px-4">฿<?php echo number_format($product['price'], 2); ?></td>
                     <td class="py-2 px-4"><?php echo htmlspecialchars($product['quantity']); ?></td>
-                    <td class="py-2 px-4"><img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="w-16 h-16 object-cover"></td>
+                    <td class="py-2 px-4">
+                        <img src="<?php echo htmlspecialchars($product['image']); ?>" alt="<?php echo htmlspecialchars($product['name']); ?>" class="w-16 h-16 object-cover">
+                    </td>
                     <td class="py-2 px-4">
                         <form action="edit_product.php" method="GET">
                             <input type="hidden" name="product_id" value="<?php echo $product['id']; ?>">
